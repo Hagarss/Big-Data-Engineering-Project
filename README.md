@@ -155,7 +155,7 @@ query = (edits_per_min.writeStream
 query.awaitTermination()
 ```
 
-*Produces a continuously updated **Parquet table** in HDFS containing *edits‑per‑minute per wiki*.
+*Produces a continuously updated **Parquet table** in HDFS containing *edits‑per‑minute per wiki*.*
 
 ---
 
@@ -199,8 +199,7 @@ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.1 \
 * **Aggregated edits‑per‑minute** → `hdfs:///user/bigdata/aggregates/wiki_edits_minute/`
 ```
 
----
-
+```
 ### 7 · Repository Structure 
 
 ```
