@@ -30,7 +30,7 @@ This project demonstrates a complete big data pipeline designed to collect, inge
 
 ### Toolchain
 
-* **OS**: CentOS 7 (or Rocky Linux 8/9)
+* **OS**: CentOS 6.5 
 * **Apache Hadoop 3.3.x** – HDFS storage
 * **Apache Kafka 2.8.x** – event streaming
 * **Apache Flume 1.9.x** – file→Kafka & Kafka→HDFS bridges
@@ -62,10 +62,6 @@ for event in SSEClient(url):
             json.dump(data, f)
         print("Saved", fn)
 ```
-
-*Uses the official SSE endpoint .*
-
----
 
 ### 2 · Flume Configuration
 
@@ -106,7 +102,6 @@ agent2.sinks.h2.channel             = c2
 
 agent2.channels.c2.type = memory
 ```
-
 ---
 
 ### 3 · Kafka Topic
@@ -160,14 +155,16 @@ query = (edits_per_min.writeStream
 query.awaitTermination()
 ```
 
-*Produces a continuously updated **Parquet table** in HDFS containing *edits‑per‑minute per wiki*. You can attach Athena/Impala/Spark SQL notebooks for interactive BI.*
+*Produces a continuously updated **Parquet table** in HDFS containing *edits‑per‑minute per wiki*.
+
+---
 
 ---
 
 ### 5 · Running Everything
 
 ```bash
-# 1.  Start Hadoop (NN + DN) and YARN
+# 1.  Start Hadoop  HDFS and YARN
 start-dfs.sh  
 start-yarn.sh
 
@@ -175,7 +172,7 @@ start-yarn.sh
 $KAFKA_HOME/bin/zookeeper-server-start.sh -daemon config/zookeeper.properties
 $KAFKA_HOME/bin/kafka-server-start.sh    -daemon config/server.properties
 
-# 3.  Create the topic (if not yet done)
+# 3.  Create the topic
 $KAFKA_HOME/bin/kafka-topics.sh --create --topic wiki_changes \
                                 --bootstrap-server localhost:9092 \
                                 --partitions 1 --replication-factor 1
@@ -189,7 +186,7 @@ $FLUME_HOME/bin/flume-ng agent --conf conf --conf-file kafka_to_hdfs.conf \
 # 5.  Start the Python collector
 python3 connection_stream.py &
 
-# 6.  Submit the Spark job (Spark 3.3 / Scala 2.12 example)
+# 6.  Submit the Spark job 
 spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.1 \
              data_streaming.py
 ```
@@ -199,14 +196,7 @@ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.1 \
 ### 6 · Outputs
 
 * **Raw events** → `hdfs:///user/bigdata/flume/raw/wiki_changes/*`
-* **Aggregated edits‑per‑minute** (Parquet) → `hdfs:///user/bigdata/aggregates/wiki_edits_minute/`
-* Sample query:
-
-```sql
-SELECT window.start, window.end, wiki, count
-FROM parquet.`/user/bigdata/aggregates/wiki_edits_minute`
-ORDER BY window DESC, count DESC
-LIMIT 20;
+* **Aggregated edits‑per‑minute** → `hdfs:///user/bigdata/aggregates/wiki_edits_minute/`
 ```
 
 ---
@@ -220,7 +210,7 @@ LIMIT 20;
 │   ├── spool_to_kafka.conf
 │   └── kafka_to_hdfs.conf
 ├── gifs
-│   └── Your_paragraph_text.gif
+│   └── Big data tools diagram.gif
 └── README.md   ←  this document
 ```
 
