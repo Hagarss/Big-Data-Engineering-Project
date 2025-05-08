@@ -211,8 +211,9 @@ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.1 \
 │   └── kafka_to_hdfs.conf
 ├── gifs
 │   └── Big data tools diagram.gif
-└── README.md   ←  this document
+└── README.md ← this document
 ```
+
 
 
 ## Next Steps
